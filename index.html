@@ -1,1 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Weekly Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+    .day {
+      padding: 10px;
+      border: 1px solid #ccc;
+      min-height: 150px;
+      background-color: #f9f9f9;
+    }
+    .day input, .day select {
+      width: 100%;
+      margin-top: 5px;
+    }
+    button {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Weekly Healthy Habits Calendar</h1>
+  <div class="calendar">
+    ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
+      day => `
+      <div class="day">
+        <strong>${day}</strong><br>
+        <input type="text" placeholder="Add habit...">
+        <select>
+          ${[...Array(24).keys()]
+            .map(hour => {
+              const time = hour.toString().padStart(2, '0') + ':00';
+              return `<option value="${time}">${time}</option>`;
+            })
+            .join('')}
+        </select>
+      </div>
+    `
+    ).join('')}
+  </div>
+  <button onclick="saveCalendar()">Save Calendar</button>
+  <button onclick="exportToICS()">Export to Calendar</button>
+
+  <script>
+    function saveCalendar() {
+      const data = [...document.querySelectorAll('.day')].map(day => ({
+        habit: day.querySelector('input').value,
+        time: day.querySelector('select').value
+      }));
+      localStorage.setItem('weeklyCalendar', JSON.stringify(data));
+      alert('Calendar saved!');
+    }
+
+    function exportToICS() {
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const events = [...document.querySelectorAll('.day')].map((day, index) => {
+        const habit = day.querySelector('input').value;
+        const time = day.querySelector('select').value;
+        if (!habit) return '';
+
+        const now = new Date();
+        const startDate = new Date(now.setDate(now.getDate() - now.getDay() + index + 1));
+        const [hour, minute] = time.split(':');
+        startDate.setHours(parseInt(hour), parseInt(minute), 0);
+
+        const endDate = new Date(startDate);
+        endDate.setHours(endDate.getHours() + 1);
+
+        const formatDate = date =>
+          date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+        return `
+BEGIN:VEVENT
+SUMMARY:${habit}
+DTSTART:${formatDate(startDate)}
+DTEND:${formatDate(endDate)}
+END:VEVENT`;
+      }).join('\n');
+
+      const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+${events}
+END:VCALENDAR`;
+
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'healthy_habits_calendar.ics';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Load saved data
+    window.onload = () => {
+      const savedData = JSON.parse(localStorage.getItem('weeklyCalendar') || '[]');
+      document.querySelectorAll('.day').forEach((day, index) => {
+        if (savedData[index]) {
+          day.querySelector('input').value = savedData[index].habit || '';
+          day.querySelector('select').value = savedData[index].time || '00:00';
+        }
+      });
+    };
+  </script>
+</body>
+</html>
 
