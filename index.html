@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Weekly Calendar</title>
+  <title>Habits & Values Alignment Calendar</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -81,11 +81,13 @@
     <option value="6">6 Weeks</option>
   </select>
 
-  <div class="calendar">
+  <div id="calendar-container" class="calendar">
     <div class="day">
-      <strong>Monday</strong>
+    <div class="day">
+      <strong>Monday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -113,9 +115,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Tuesday</strong>
+      <strong>Tuesday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -143,9 +146,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Wednesday</strong>
+      <strong>Wednesday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -173,9 +177,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Thursday</strong>
+      <strong>Thursday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -203,9 +208,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Friday</strong>
+      <strong>Friday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -233,9 +239,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Saturday</strong>
+      <strong>Saturday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -263,9 +270,10 @@
       </select>
     </div>
     <div class="day">
-      <strong>Sunday</strong>
+      <strong>Sunday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
+        <!-- Military time options -->
         <option value="00:00">00:00</option>
         <option value="01:00">01:00</option>
         <option value="02:00">02:00</option>
@@ -292,19 +300,22 @@
         <option value="23:00">23:00</option>
       </select>
     </div>
+    <!-- Add remaining days (Tuesday through Sunday) in the same format -->
   </div>
 
-  <button onclick="saveCalendar()">Save Calendar</button>
+  <button onclick="saveCalendarAsImage()">Save Calendar</button>
   <button onclick="exportToICS()">Export to Calendar</button>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script>
-    function saveCalendar() {
-      const data = [...document.querySelectorAll('.day')].map(day => ({
-        habit: day.querySelector('input').value,
-        time: day.querySelector('select').value
-      }));
-      localStorage.setItem('weeklyCalendar', JSON.stringify(data));
-      alert('Calendar saved!');
+    function saveCalendarAsImage() {
+      const calendar = document.getElementById('calendar-container');
+      html2canvas(calendar).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'habits_calendar.jpg';
+        link.href = canvas.toDataURL('image/jpeg');
+        link.click();
+      });
     }
 
     function exportToICS() {
@@ -360,16 +371,6 @@ END:VCALENDAR`;
       link.click();
       document.body.removeChild(link);
     }
-
-    window.onload = () => {
-      const savedData = JSON.parse(localStorage.getItem('weeklyCalendar') || '[]');
-      document.querySelectorAll('.day').forEach((day, index) => {
-        if (savedData[index]) {
-          day.querySelector('input').value = savedData[index].habit || '';
-          day.querySelector('select').value = savedData[index].time || '00:00';
-        }
-      });
-    };
   </script>
 </body>
 </html>
