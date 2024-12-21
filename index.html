@@ -52,7 +52,7 @@
   <h1>Weekly Healthy Habits Calendar</h1>
   <p>Add habits that will align your core values with your purpose. You can save this weekly schedule for future reference or export it and add it to iOS/macOS Calendar, Google Calendar, or Outlook. Your habits will be added to the following week.</p>
   
-  <label for="repeat-weeks">How many weeks would you like to see these habit reminders on your calendar? (This only applies if you plan on exporting this calendar)</label>
+  <label for="repeat-weeks">Repeat habits for how many weeks?</label>
   <select id="repeat-weeks">
     <option value="1">1 Week</option>
     <option value="2">2 Weeks</option>
@@ -64,6 +64,38 @@
   <div class="calendar">
     <div class="day">
       <strong>Monday</strong><br>
+      <input type="text" placeholder="Add habit...">
+      <select>
+        <!-- Time options -->
+        <option value="00:00">00:00</option>
+        <option value="01:00">01:00</option>
+        <option value="02:00">02:00</option>
+        <option value="03:00">03:00</option>
+        <option value="04:00">04:00</option>
+        <option value="05:00">05:00</option>
+        <option value="06:00">06:00</option>
+        <option value="07:00">07:00</option>
+        <option value="08:00">08:00</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+        <option value="19:00">19:00</option>
+        <option value="20:00">20:00</option>
+        <option value="21:00">21:00</option>
+        <option value="22:00">22:00</option>
+        <option value="23:00">23:00</option>
+      </select>
+    </div>
+    <!-- Repeat this structure for Tuesday to Sunday -->
+    <div class="day">
+      <strong>Tuesday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
         <option value="00:00">00:00</option>
@@ -92,20 +124,7 @@
         <option value="23:00">23:00</option>
       </select>
     </div>
-    <!-- Repeat for Tuesday through Sunday -->
-    ${['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-      .map(day => `
-        <div class="day">
-          <strong>${day}</strong><br>
-          <input type="text" placeholder="Add habit...">
-          <select>
-            ${[...Array(24).keys()]
-              .map(hour => `<option value="${hour.toString().padStart(2, '0')}:00">${hour.toString().padStart(2, '0')}:00</option>`)
-              .join('')}
-          </select>
-        </div>
-      `)
-      .join('')}
+    <!-- Repeat for Wednesday through Sunday -->
   </div>
   
   <button onclick="saveCalendar()">Save Calendar</button>
@@ -133,10 +152,10 @@
 
       const events = [];
       const now = new Date();
-      const startOfNextWeek = new Date(now.setDate(now.getDate() - now.getDay() + 8)); // Start of the following week
+      const startOfNextWeek = new Date(now.setDate(now.getDate() - now.getDay() + 8));
 
       for (let week = 0; week < weeksToRepeat; week++) {
-        const weekOffset = week * 7; // Days to add per week
+        const weekOffset = week * 7;
         data.forEach(({ dayIndex, habit, time }) => {
           const eventDate = new Date(startOfNextWeek);
           eventDate.setDate(eventDate.getDate() + dayIndex + weekOffset);
