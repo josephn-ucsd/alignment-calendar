@@ -83,7 +83,6 @@
 
   <div id="calendar-container" class="calendar">
     <div class="day">
-    <div class="day">
       <strong>Monday</strong><br>
       <input type="text" placeholder="Add habit...">
       <select>
@@ -300,7 +299,6 @@
         <option value="23:00">23:00</option>
       </select>
     </div>
-    <!-- Add remaining days (Tuesday through Sunday) in the same format -->
   </div>
 
   <button onclick="saveCalendarAsImage()">Save Calendar</button>
@@ -309,12 +307,23 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script>
     function saveCalendarAsImage() {
+      // Get the calendar and the buttons
       const calendar = document.getElementById('calendar-container');
+      const buttons = document.querySelectorAll('button');
+
+      // Temporarily hide the buttons
+      buttons.forEach(button => button.style.visibility = 'hidden');
+
+      // Capture the calendar as an image
       html2canvas(calendar).then(canvas => {
+        // Create a download link for the image
         const link = document.createElement('a');
         link.download = 'habits_calendar.jpg';
         link.href = canvas.toDataURL('image/jpeg');
         link.click();
+
+        // Restore button visibility after capture
+        buttons.forEach(button => button.style.visibility = 'visible');
       });
     }
 
