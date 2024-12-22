@@ -12,9 +12,13 @@
     }
     h1 {
       color: #00356B; /* UCSD blue */
+      text-align: center; /* Center-align header */
     }
     p {
       color: #182B49;
+    }
+    .calendar-container {
+      margin-top: 20px;
     }
     .calendar {
       display: flex;
@@ -68,7 +72,7 @@
   </style>
 </head>
 <body>
-  <h1>Habits & Values Alignment Calendar</h1>
+  <h1 id="calendar-header">Habits & Values Alignment Calendar</h1>
   <p>Add habits that will align your core values with your purpose. You can save this weekly schedule for future reference or export it and add it to iOS/macOS Calendar, Google Calendar, or Outlook. Your habits will be added to the following week.</p>
 
   <label for="repeat-weeks">Select how many weeks you would like to receive reminders when exporting to your calendar:</label>
@@ -81,7 +85,8 @@
     <option value="6">6 Weeks</option>
   </select>
 
-  <div id="calendar-container" class="calendar">
+  <div id="calendar-container" class="calendar-container">
+    <div class="calendar">
     <div class="day">
       <strong>Monday</strong><br>
       <input type="text" placeholder="Add habit...">
@@ -307,22 +312,32 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas"></script>
   <script>
     function saveCalendarAsImage() {
-      // Get the calendar and the buttons
-      const calendar = document.getElementById('calendar-container');
+      // Get the elements to capture
+      const header = document.getElementById('calendar-header');
+      const calendarContainer = document.getElementById('calendar-container');
       const buttons = document.querySelectorAll('button');
 
       // Temporarily hide the buttons
       buttons.forEach(button => button.style.visibility = 'hidden');
 
-      // Capture the calendar as an image
-      html2canvas(calendar).then(canvas => {
+      // Create a wrapper div for the header and calendar
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(header.cloneNode(true));
+      wrapper.appendChild(calendarContainer.cloneNode(true));
+
+      // Add wrapper to the document for capture
+      document.body.appendChild(wrapper);
+
+      // Capture the combined content
+      html2canvas(wrapper).then(canvas => {
         // Create a download link for the image
         const link = document.createElement('a');
         link.download = 'habits_calendar.jpg';
         link.href = canvas.toDataURL('image/jpeg');
         link.click();
 
-        // Restore button visibility after capture
+        // Remove wrapper and restore button visibility
+        document.body.removeChild(wrapper);
         buttons.forEach(button => button.style.visibility = 'visible');
       });
     }
